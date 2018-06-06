@@ -6,7 +6,7 @@ module.exports = {
   mysql_host: 'localhost',
   mysql_port: '3306',
   mysql_user: 'root',
-  mysql_password: 'root',
+  mysql_password: '123456',
   mysql_dbname: 'an_ju_ke',
 
   // 超级管理员配置
