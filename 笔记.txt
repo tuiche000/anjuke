@@ -1,0 +1,85 @@
+项目：
+1.接口字典
+2.数据字典
+
+--------------------------------------------------------------------------------
+
+token概念：
+
+访问服务器接口，身份识别：
+1.cookie、session        性能高，不能跨域
+  cookie不能跨域、session不能跨域
+2.token                  能跨域
+
+接口：
+ajax("/get_user_data" () => {})
+  cookie: {user_id: 'abcasdsad213123das'}
+
+ajax("http://www.alipay.com/get_user_data?token=abcasdsad213123das" () => {})
+
+--------------------------------------------------------------------------------
+
+1.token迫不得已的选择，cookie的替代品
+2.token就是好长的ID而已，防止别人暴力破解
+
+--------------------------------------------------------------------------------
+
+数据字典：
+1.管理员表    admin_table
+ID    varchar(32)   用户得ID，由UUID负责生成，全局唯一    主键/非空
+username    varchar(32)   用户名，不能重复    非空
+password    varchar(32)   密码，不能重复    非空
+b_house   bit   管理房屋权限  可空
+b_ad    bit   广告权限    可空
+b_link    bit   友情链接权限    可空
+b_broker    bit   房产经纪人权限    可空
+2.管理员token表   admin_token_table
+ID    非空/主键
+admin_ID    varchar(32)
+expires   int(11)
+3.房屋表    house_table
+ID
+admin_ID  varchar(32)    哪个管理员创建的房屋信息
+title   varchar(255)    标题
+sub_title   varchar(255)    副标题
+postion_main    varchar(255)    主要位置
+postion_secound   varchar(255)    具体位置
+ave_price   int(11)   均价
+area_min    smallint(6)   最小面积
+area_max    smallint(6)   最大面积
+tel   varchar(16)   电话
+sale_time   int(11)   开售时间
+submit_time   int(11)   交房时间
+building_type   varchar(32)   建筑类型
+main_img_path   varchar(255)    主要图片地址
+main_img_real_path   varchar(255)    服务器磁盘图片地址
+img_paths   text    轮播图地址
+img_real_paths   text    服务器磁盘轮播图地址
+property_types    text    房屋类型
+property_img_paths    text    户型图
+property_img_real_paths   text    户型图真实磁盘地址
+4.广告表    ad_tale
+ID
+admin_ID    varchar(32)   哪个管理员发布的广告
+type    int(11)   广告类型
+title   varchar(255)    广告标题
+link   varchar(255)    广告链接
+img_path   varchar(255)    广告图片地址
+img_real_path   varchar(255)    广告图片磁盘地址
+expires   int(11)   过期时间
+n_order   int(11)   序号
+n_show   int(11)   展现次数
+n_click   int(11)   点击次数
+5.友情链接    link_table
+ID
+admin_ID
+type     int    友情链接类型
+title   varchar(255)
+link    varchar(255)
+n_order   int    顺序
+expires   int   到期时间 
+6.置业顾问表    broker_table
+ID
+title   经纪人姓名
+img_path    经纪人头像路径
+img_real_path   经纪人头像磁盘路径
