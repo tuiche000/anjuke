@@ -14,8 +14,8 @@ module.exports = {
   root_password: 'e10adc3949ba59abbe56e057f20f883e',
 
   //
-  show_in_admin_house: 'ID:ID, title: 标题, ave_price: 均价, tel: 电话',
-  show_in_admin_broker: 'ID:ID, title: 姓名',
-  show_in_admin_link: 'ID:ID, title: 标题, type: 类型, link: 地址',
+  show_in_admin_house: 'ID:ID,title: 标题,ave_price: 均价,tel: 电话',
+  show_in_admin_broker: 'ID:ID,title: 姓名',
+  show_in_admin_link: 'ID:ID,title: 标题,type: 类型,link: 地址',
   // show_in_admin_house: 'ID:ID, title: 标题, type: 类型, link: 地址, expires: 有效期',
 }

@@ -501,17 +501,13 @@
                                 </td>
 
                                 <% 
-                                for(name in jsonShowName) { 
+                                let newJson = JSON.parse(JSON.stringify(json))
+                                for(let name in jsonShowName) {
                                     if(name == 'ID')continue;
                                 %>
-                                <td> <%= json %> <%= name %> <%= json[name] %> </td>
+                                <th><%= newJson[name] %></th>
                                 <% } %>
-                                <!-- <td>
-                                    <%= json.ave_price %>
-                                </td>
-                                <td>
-                                    <%= json.tel %>
-                                </td> -->
+                              
                                 <td>
                                     <a onclick="mod_data('<%= json.ID %>')">编辑</a>
                                     <a href="/admin/house/delete?id=<%= json.ID %>" onclick="return confirm('你确定要删除这个房屋信息吗？删除不可撤销')">删除</a>
