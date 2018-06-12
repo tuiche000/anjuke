@@ -155,7 +155,6 @@ router.get('/:table', (req, res) => {
           } else if (data.length == 0) {
             res.sendStatus(500);
           } else {
-            console.log(jsonShowName)
             res.render('index', {
               data: result,
               show_page_count: 9,
