@@ -108,8 +108,7 @@ router.get('/:table', (req, res) => {
 
   if (!config[`show_in_admin_${table}`]) {
     res.sendStatus(404)
-  } else 
-  {
+  } else {
     let aField = []
     let jsonShowName = []
 
@@ -143,7 +142,7 @@ router.get('/:table', (req, res) => {
 
 
     // 1.获取数据
-    req.db.query(`SELECT ${aField.join(',')} FROM ${table}_table WHERE ${like_seg} LIMIT ${start}, ${size}`, (err, result) => {
+    req.db.query(`SELECT ${aField.join(',')} FROM ${table}_table WHERE ${like_seg} ORDER BY create_time DESC LIMIT ${start}, ${size}`, (err, result) => {
       if (err) {
         res.sendStatus(500)
         console.log(err)
@@ -161,7 +160,8 @@ router.get('/:table', (req, res) => {
               cur_page: parseInt(page),
               page_count: Math.ceil(data[0].c / size),
               keyword: req.query.keyword,
-              jsonShowName
+              jsonShowName,
+              table
             })
           }
         })
@@ -172,75 +172,136 @@ router.get('/:table', (req, res) => {
 
 })
 // 添加 || 修改
-router.post('/house', (req, res) => {
+router.post('/:table', (req, res) => {
 
-  req.body['sale_time'] = Math.floor(new Date(req.body['sale_time']).getTime() / 1000)
-  req.body['submit_time'] = Math.floor(new Date(req.body['submit_time']).getTime() / 1000)
+  const { table } = req.params
+
+  // console.log(req.body)
 
   if (req.body.is_mod == 'true') {
 
-    const fields = ['title', 'sub_title', 'postion_main', 'postion_secound', 'ave_price', 'area_min', 'area_max', 'tel', 'sale_time', 'submit_time', 'building_type', 'property_types']
+    if (!config[`insert_fileds_${table}`]) {
+      res.sendStatus(404);
+    } else {
 
-    let arr = []
+      let fields = config[`insert_fileds_${table}`].split(',');
+      config['disallow_modify_fields'].split(',').forEach(name => {
+        fields = fields.filter(item => item!=name);
+      })
 
-    fields.forEach(key => {
-      arr.push(`${key}='${req.body[key]}'`)
+      let arr = []
+
+      fields.forEach(key => {
+        arr.push(`${key}='${req.body[key]}'`)
+      })
+
+      let sql = `UPDATE ${table}_table SET ${arr.join(',')} WHERE ID='${req.body['old_id']}'`
+
+      req.db.query(sql, err => {
+        if (err) {
+          console.log(err)
+          res.sendStatus(500)
+        } else {
+          res.redirect(`/admin/${table}`)
+        }
+      })
+
+    }
+
+  } else {
+    // 时间
+
+    const file_info = {
+      'main_img': {
+        path: 'main_img_path',
+        real_path: 'main_img_real_path',
+        type: 'single'
+      },
+      'img': {
+        path: 'img_paths',
+        real_path: 'img_real_paths',
+        type: 'array'
+      },
+      'property_img': {
+        path: 'property_img_paths',
+        real_path: 'property_img_real_paths',
+        type: 'array'
+      }
+    }
+
+    const file_paths = {}
+    const file_real_paths = {}
+
+    for (let i = 0; i < req.files.length; i++) {
+      let name = req.files[i].fieldname;
+
+      if (file_info[name]) {
+        if (!file_paths[name]) {
+          file_paths[name] = []
+          file_real_paths[name] = []
+        }
+
+        file_paths[name].push(req.files[i].filename)
+        file_real_paths[name].push(req.files[i].path.replace(/\\/g, '\\\\'))
+      }
+
+    }
+
+    for (let name in file_paths) {
+      if (file_info[name].type == 'single') {
+        req.body[file_info[name].path] = file_paths[name][0]
+        req.body[file_info[name].real_path] = file_real_paths[name][0]
+      } else {
+        req.body[file_info[name].path] = file_paths[name].join(',')
+        req.body[file_info[name].real_path] = file_real_paths[name].join(',')
+      }
+    }
+
+    // let aImgPath = []
+    // let aImgRealPath = []
+
+    // for (let i = 0; i < req.files.length; i++) {
+    //   switch (req.files[i].fieldname) {
+    //     case 'main_img':
+    //       req.body['main_img_path'] = req.files[i].filename
+    //       req.body['main_img_real_path'] = req.files[i].path.replace(/\\/g, '\\\\')
+    //       break;
+    //     case 'img':
+    //       aImgPath.push(req.files[i].filename)
+    //       aImgRealPath.push(req.files[i].path.replace(/\\/g, '\\\\'))
+    //       break;
+    //     case 'property_img':
+    //       req.body['property_img_paths'] = req.files[i].filename
+    //       req.body['property_img_real_paths'] = req.files[i].path.replace(/\\/g, '\\\\')
+    //       break;
+    //   }
+    // }
+    // req.body['img_paths'] = aImgPath.join(',');
+    // req.body['img_real_paths'] = aImgRealPath.join(',');
+
+    req.body['ID'] = common.uuid()
+    req.body['admin_ID'] = req.admin_ID
+
+
+    arrField = [];
+    arrValue = [];
+
+    config[`insert_fileds_${table}`].split(',').forEach(name => {
+      arrField.push(name)
+      arrValue.push(req.body[name])
     })
+    arrField.push('create_time');
+    arrValue.push(Math.floor(new Date().getTime() / 1000))
 
-    let sql = `UPDATE house_table SET ${arr.join(',')} WHERE ID='${req.body['old_id']}'`
+    let sql = `INSERT INTO ${table}_table (${arrField.join(',')}) VALUES('${arrValue.join("','")}')`
+    // console.log(sql)
 
     req.db.query(sql, err => {
       if (err) {
         console.log(err)
         res.sendStatus(500)
       } else {
-        res.redirect('/admin/house')
-      }
-    })
-
-  } else {
-    // 时间
-
-    let aImgPath = []
-    let aImgRealPath = []
-
-    for (let i = 0; i < req.files.length; i++) {
-      switch (req.files[i].fieldname) {
-        case 'main_img':
-          req.body['main_img_path'] = req.files[i].filename
-          req.body['main_img_real_path'] = req.files[i].path.replace(/\\/g, '\\\\')
-          break;
-        case 'img':
-          aImgPath.push(req.files[i].filename)
-          aImgRealPath.push(req.files[i].path.replace(/\\/g, '\\\\'))
-          break;
-        case 'property_img':
-          req.body['property_img_paths'] = req.files[i].filename
-          req.body['property_img_real_paths'] = req.files[i].path.replace(/\\/g, '\\\\')
-          break;
-      }
-    }
-
-    req.body['ID'] = common.uuid()
-    req.body['admin_ID'] = req.admin_ID
-
-    req.body['img_paths'] = aImgPath.join(',');
-    req.body['img_real_paths'] = aImgRealPath.join(',');
-
-    arrField = [];
-    arrValue = [];
-    for (let name in req.body) {
-      arrField.push(name)
-      arrValue.push(req.body[name])
-    }
-
-    let sql = `INSERT INTO house_table (${arrField.join(',')}) VALUES('${arrValue.join("','")}')`
-
-    req.db.query(sql, err => {
-      if (err) {
-        res.sendStatus(500)
-      } else {
-        res.redirect('/admin/house')
+        res.redirect(`/admin/${table}`)
       }
     })
   }
@@ -344,15 +405,16 @@ router.get('/house/delete', (req, res) => {
 })
 
 // 接口
-router.get('/house/get_data', (req, res) => {
-  let id = req.query.id;
+router.get('/:table/get_data', (req, res) => {
+  const { table } = req.params
+  const id = req.query.id;
 
   if (!id) {
     res.sendStatus(404);
   } else if (!/^[\da-f]{32}$/.test(id)) {
     res.sendStatus(400);
   } else {
-    req.db.query(`SELECT * FROM house_table WHERE ID='${id}'`, (err, data) => {
+    req.db.query(`SELECT * FROM ${table}_table WHERE ID='${id}'`, (err, data) => {
       if (err) {
         res.sendStatus(500);
       } else if (data.length == 0) {
