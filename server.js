@@ -22,6 +22,22 @@ const db = mysql.createPool({
 
 server.use((req, res, next) => {
   req.db = db
+  req.cwd = __dirname
+
+  res.showError = function(code){
+    res.status(code)
+    switch(code){
+      case 404:
+        res.render('404');
+        break;
+      case 500:
+        res.render('500');
+        break;  
+      default:
+        res.send('error')
+    }
+  }
+
   next()
 })
 
@@ -50,4 +66,8 @@ server.use('/', require('./routers/www'))
 
 // 静态文件
 server.use(express.static('./www/'))
+
+server.use((req, res) => {
+  res.showError(404)
+})
 

@@ -179,7 +179,7 @@
 
                                         <td>
                                             <a onclick="mod_data('<%= json.ID %>')">编辑</a>
-                                            <a href="/admin/house/delete?id=<%= json.ID %>" onclick="return confirm('你确定要删除这个房屋信息吗？删除不可撤销')">删除</a>
+                                            <a href="/admin/<%= table %>/delete?id=<%= json.ID %>" onclick="return confirm('你确定要删除这个房屋信息吗？删除不可撤销')">删除</a>
                                         </td>
                             </tr>
                             <% }); %>
@@ -356,7 +356,7 @@
             if (arr.length == 0) {
                 alert('请选择要删除的东西')
             } else {
-                let url = `/admin/house/delete?id=${encodeURIComponent(arr.join(','))}`
+                let url = `/admin/<%= table %>/delete?id=${encodeURIComponent(arr.join(','))}`
                 if (confirm(`您真的要删除这${arr.length}数据吗？`)) {
                     window.location = url
                 }
