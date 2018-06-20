@@ -21,12 +21,12 @@ router.get('/', (req, res) => {
   const sql = `SELECT ID,title,sub_title,postion_main,postion_secound,property_types,area_min,area_max,ave_price,main_img_path FROM house_table LIMIT ${page_start}, ${page_size}`
   req.db.query(sql, (err, res1) => {
     if(err) {
-      res.sendStatus('500')
+      res.showError(500)
     }else {
       //
       req.db.query(`SELECT COUNT(*) AS c FROM house_table`, (err, res2) => {
         if(err) {
-          res.sendStatus(500)
+          res.showError(500)
         } else {
           res.render('list', {
             list_data: res1,
@@ -45,6 +45,16 @@ router.get('/', (req, res) => {
 router.get('/detail/:id', (req, res) => {
   let {id} = req.params
 
+  const sql = `SELECT * FROM house_table WHERE ID='${id}'`
+  req.db.query(sql, (err, data) => {
+    if(err) {
+      res.showError(500)
+    } else {
+      res.render('detail', {
+        data: data[0]
+      })
+    }
+  })
 })
 
 // 访问控制
@@ -55,7 +65,7 @@ router.get('/static_img/:img_path', (req, res) => {
 
   // 如果访问者是localhost：8080这个而服务器就让访问
   if(obj.host != 'localhost:8080') {
-    res.show404();
+    res.res.showError(404);
   } else {
     res.sendFile(`${req.cwd}\\upload\\${img_path}`)
   }
