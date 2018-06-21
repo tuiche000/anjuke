@@ -20,7 +20,7 @@ module.exports = {
   show_in_admin_ad: 'ID:ID,title: 标题,type: 类型,link: 地址,expires: 有效期',
 
   // 所有表对应的字段
-  insert_fileds_house: 'ID,admin_ID,title,sub_title,postion_main,postion_secound,ave_price,area_min,area_max,tel,sale_time,submit_time,building_type,main_img_path,main_img_real_path,img_paths,img_real_paths,property_types,property_img_paths,property_img_real_paths',
+  insert_fileds_house: 'ID,admin_ID,title,sub_title,postion_main,postion_secound,ave_price,area_min,area_max,tel,sale_time,submit_time,building_type,main_img_path,main_img_real_path,img_paths,img_real_paths,property_types,property_img_paths,property_img_real_paths,location',
   insert_fileds_broker: 'ID,admin_ID,title,img_path,img_real_path',
   insert_fileds_link: 'ID,admin_ID,type,title,link,n_order,expires',
   insert_fileds_ad: 'ID,admin_ID,type,title,link,img_path,img_real_path,expires,n_order',

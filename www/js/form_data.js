@@ -14,7 +14,8 @@ const form_datas = {
     { type: 'file', name: 'main_img', title: '大图' },
     { type: 'file', name: 'img', title: '小图(多选)', multiple: true },
     { type: 'text', name: 'property_types', title: '户型' },
-    { type: 'file', name: 'property_img', title: '户型图' }
+    { type: 'file', name: 'property_img', title: '户型图' },
+    { type: 'text', name: 'location', title: '小区坐标' }
   ],
   'ad': [
     { type: 'number', name: 'type', title: '类型' },
